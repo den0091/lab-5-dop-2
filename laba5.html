@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лабораторна №5</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Меню кнопка */
+        .menu-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: #444;
+            color: #f0f0f0;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .menu-button:hover {
+            background-color: #666;
+        }
+
+        /* Список меню */
+        .menu {
+            display: none;
+            position: fixed;
+            top: 60px;
+            left: 20px;
+            background-color: #2c2c2c;
+            padding: 10px;
+            border-radius: 5px;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 999;
+        }
+
+        .menu a {
+            color: #1e90ff;
+            text-decoration: none;
+            padding: 5px 10px;
+            background-color: #444;
+            border-radius: 5px;
+        }
+
+        .menu a:hover {
+            background-color: #666;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* Горизонтальне розташування вікон */
+        .container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            padding: 40px 20px 20px 20px;
+        }
+
+        .window {
+            background-color: #2c2c2c;
+            border-radius: 10px;
+            width: 300px;
+            height: 300px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .figure {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+        }
+
+        .square {
+            background-color: #ff6347;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .circle {
+            background-color: #1e90ff;
+            border-radius: 50%;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .star {
+            font-size: 60px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ffd700;
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 10px;
+            display: flex;
+            gap: 5px;
+        }
+
+        button.control {
+            background-color: #444;
+            color: #f0f0f0;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button.control:hover {
+            background-color: #666;
+        }
+    </style>
+</head>
+<body>
+    <button class="menu-button" onclick="toggleMenu()">Меню</button>
+    <div class="menu" id="menu">
+        <a href="Лаба №5 dop.html" target="_blank">Перейти в гру</a>
+    </div>
+
+    <h1>Лабораторна №5</h1>
+    <div class="container">
+        <div class="window">
+            <div class="figure square"></div>
+            <div class="controls">
+                <button class="control" onclick="changeSpeed('square', 1)">Прискорити</button>
+                <button class="control" onclick="changeSpeed('square', -1)">Сповільнити</button>
+                <button class="control" onclick="togglePause('square')">Пауза</button>
+            </div>
+        </div>
+        <div class="window">
+            <div class="figure circle"></div>
+            <div class="controls">
+                <button class="control" onclick="changeSpeed('circle', 1)">Прискорити</button>
+                <button class="control" onclick="changeSpeed('circle', -1)">Сповільнити</button>
+                <button class="control" onclick="togglePause('circle')">Пауза</button>
+            </div>
+        </div>
+        <div class="window">
+            <div class="figure star">&#9733;</div>
+            <div class="controls">
+                <button class="control" onclick="changeSpeed('star', 1)">Прискорити</button>
+                <button class="control" onclick="changeSpeed('star', -1)">Сповільнити</button>
+                <button class="control" onclick="togglePause('star')">Пауза</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Меню
+        function toggleMenu() {
+            const menu = document.getElementById('menu');
+            menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        // Анімації
+        const figures = {
+            square: { pos: 0, speed: 2, dir: 1, paused: false, max: 220 },
+            circle: { pos: 0, speed: 2, dir: 1, paused: false, max: 220 },
+            star: { angle: 0, speed: 2, paused: false }
+        };
+
+        function animate() {
+            const square = document.querySelector('.square');
+            if (!figures.square.paused) {
+                figures.square.pos += figures.square.speed * figures.square.dir;
+                if (figures.square.pos > figures.square.max || figures.square.pos < 0) figures.square.dir *= -1;
+                square.style.left = figures.square.pos + 'px';
+            }
+
+            const circle = document.querySelector('.circle');
+            if (!figures.circle.paused) {
+                figures.circle.pos += figures.circle.speed * figures.circle.dir;
+                if (figures.circle.pos > figures.circle.max || figures.circle.pos < 0) figures.circle.dir *= -1;
+                circle.style.top = figures.circle.pos + 'px';
+            }
+
+            const star = document.querySelector('.star');
+            if (!figures.star.paused) {
+                figures.star.angle += figures.star.speed;
+                star.style.transform = `translate(-50%, -50%) rotate(${figures.star.angle}deg)`;
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        function changeSpeed(name, delta) {
+            figures[name].speed += delta;
+            if (figures[name].speed < 0) figures[name].speed = 0;
+        }
+
+        function togglePause(name) {
+            figures[name].paused = !figures[name].paused;
+        }
+
+        animate();
+    </script>
+</body>
+</html>
